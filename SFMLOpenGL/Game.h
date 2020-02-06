@@ -11,6 +11,7 @@
 
 #include <Vector3.h>
 #include <Matrix3.h>
+#include <fstream>
 
 using namespace std;
 
@@ -30,8 +31,9 @@ private:
 
 	sf::Clock clock;
 	sf::Time elapsed;
+	std::string shaderFile(std::string t_filePath);
 
-	float rotationAngle = 1.0f;
+	float rotationAngle = 0.01f;
 };
 
 #endif

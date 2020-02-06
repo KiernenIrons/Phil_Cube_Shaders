@@ -33,6 +33,48 @@ void Game::run()
 	}
 }
 
+std::string Game::shaderFile(std::string t_filePath)
+{
+	std::string fileStuff;
+	std::string line;
+	std::ifstream reading(t_filePath);
+
+	if (reading.is_open())
+	{
+		while (std::getline(reading, line))
+		{
+			int length = line.length();
+			int size = line.size();
+
+			for (int character = 0; character < length; character++)
+			{
+				if (line[character] != '\\' && line[character] != 'n' && line[character] != 'r')
+				{
+					line += line[character];
+
+					character++;
+				}
+				else if (line[character + 1] == 'n')
+				{
+					line += '\n';
+					character++;
+				}					
+				else if (line[character + 1] == 'r')
+				{
+					line += '\r';
+					character++;
+				}
+			}
+
+			fileStuff += line;
+		}
+	}
+
+	reading.close();
+	
+	return fileStuff;
+}
+
 typedef struct
 {
 	float coordinate[3];
@@ -58,6 +100,8 @@ void Game::initialize()
 	GLint isLinked = 0;
 
 	glewInit();
+
+	glEnable(GL_CULL_FACE);
 
 	/* Vertices counter-clockwise winding */
 	vertex[0].coordinate[0] = -1.0f;
@@ -93,14 +137,14 @@ void Game::initialize()
 	vertex[7].coordinate[2] = -1.0f;
 
 	vertex[0].color[0] = 0.5f;
-	vertex[0].color[1] = 0.0f;
+	vertex[0].color[1] = 1.0f;
 	vertex[0].color[2] = 0.5f;
-	vertex[0].color[3] = 1.0f;
+	vertex[0].color[3] = 0.0f;
 
-	vertex[1].color[0] = 0.5f;
-	vertex[1].color[1] = 0.0f;
+	vertex[1].color[0] = 0.0f;
+	vertex[1].color[1] = 1.0f;
 	vertex[1].color[2] = 0.5f;
-	vertex[1].color[3] = 1.0f;
+	vertex[1].color[3] = 0.5f;
 
 	vertex[2].color[0] = 0.5f;
 	vertex[2].color[1] = 0.0f;
@@ -140,14 +184,10 @@ void Game::initialize()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	/* Vertex Shader which would normally be loaded from an external file */
-	const char* vs_src = "#version 400\n\r"
-		"in vec4 sv_position;"
-		"in vec4 sv_color;"
-		"out vec4 color;"
-		"void main() {"
-		"	color = sv_color;"
-		"	gl_Position = sv_position;"
-		"}"; //Vertex Shader Src
+	std::string vtxshader = shaderFile(std::string("vtxshader.txt"));
+
+	//Vertex Shader Src
+	const char* vs_src = &vtxshader[0]; 
 
 	DEBUG_MSG("Setting Up Vertex Shader");
 
@@ -167,13 +207,11 @@ void Game::initialize()
 		DEBUG_MSG("ERROR: Vertex Shader Compilation Error");
 	}
 
-	/* Fragment Shader which would normally be loaded from an external file */
-	const char* fs_src = "#version 400\n\r"
-		"in vec4 color;"
-		"out vec4 fColor;"
-		"void main() {"
-		"	fColor = color + vec4(0.0f, 1.0f, 0.0f, 1.0f);"
-		"}"; //Fragment Shader Src
+	// Fragment Shader which would normally be loaded from an external file 
+	std::string frgshader = shaderFile(std::string("frgshader.txt"));
+
+	//Fragment Shader Src
+	const char* fs_src = &frgshader[0];
 
 	DEBUG_MSG("Setting Up Fragment Shader");
 
@@ -389,19 +427,6 @@ void Game::update()
 		}
 	}
 
-	//Change vertex data
-	//vertex[0].coordinate[0] += -0.0001f;
-	//vertex[0].coordinate[1] += -0.0001f;
-	//vertex[0].coordinate[2] += -0.0001f;
-
-	//vertex[1].coordinate[0] += -0.0001f;
-	//vertex[1].coordinate[1] += -0.0001f;
-	//vertex[1].coordinate[2] += -0.0001f;
-
-	//vertex[2].coordinate[0] += -0.0001f;
-	//vertex[2].coordinate[1] += -0.0001f;
-	//vertex[2].coordinate[2] += -0.0001f;
-
 #if (DEBUG >= 2)
 	DEBUG_MSG("Update up...");
 #endif
@@ -441,7 +466,6 @@ void Game::render()
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (char*)NULL + 0);
 
 	window.display();
-
 }
 
 void Game::unload()
@@ -452,4 +476,3 @@ void Game::unload()
 	glDeleteProgram(progID);
 	glDeleteBuffers(1, &vbo);
 }
-
