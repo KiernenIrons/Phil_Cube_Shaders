@@ -1,6 +1,6 @@
-"#version 400\n\r"
+#version 400
 in vec4 color;
 out vec4 fColor;
 void main() {
-	fColor = color + vec4(0.0f, 1.0f, 0.0f, 1.0f);
+fColor = color + vec4(0.0f, 1.0f, 0.0f, 1.0f);
 }

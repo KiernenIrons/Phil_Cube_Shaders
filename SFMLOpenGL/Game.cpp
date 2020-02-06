@@ -43,35 +43,17 @@ std::string Game::shaderFile(std::string t_filePath)
 	{
 		while (std::getline(reading, line))
 		{
-			int length = line.length();
-			int size = line.size();
-
-			for (int character = 0; character < length; character++)
-			{
-				if (line[character] != '\\' && line[character] != 'n' && line[character] != 'r')
-				{
-					line += line[character];
-
-					character++;
-				}
-				else if (line[character + 1] == 'n')
-				{
-					line += '\n';
-					character++;
-				}					
-				else if (line[character + 1] == 'r')
-				{
-					line += '\r';
-					character++;
-				}
-			}
-
 			fileStuff += line;
+			fileStuff += "\n";
+			std::cout << "Doing Things" << std::endl;
 		}
+	}
+	else
+	{
+		std::cout << "Error loading file: " + t_filePath << std::endl;
 	}
 
 	reading.close();
-	
 	return fileStuff;
 }
 
@@ -136,20 +118,37 @@ void Game::initialize()
 	vertex[7].coordinate[1] = 1.0f;
 	vertex[7].coordinate[2] = -1.0f;
 
-	vertex[0].color[0] = 0.5f;
-	vertex[0].color[1] = 1.0f;
-	vertex[0].color[2] = 0.5f;
-	vertex[0].color[3] = 0.0f;
+	vertex[0].color[0] = 0.0f;
+	vertex[0].color[1] = 0.0f;
+	vertex[0].color[2] = 1.0f;
 
-	vertex[1].color[0] = 0.0f;
-	vertex[1].color[1] = 1.0f;
-	vertex[1].color[2] = 0.5f;
-	vertex[1].color[3] = 0.5f;
+	vertex[1].color[0] = 1.0f;
+	vertex[1].color[1] = 0.0f;
+	vertex[1].color[2] = 1.0f;
 
 	vertex[2].color[0] = 0.5f;
 	vertex[2].color[1] = 0.0f;
-	vertex[2].color[2] = 0.5f;
-	vertex[2].color[3] = 1.0f;
+	vertex[2].color[2] = 1.0f;
+
+	vertex[3].color[0] = 0.0f;
+	vertex[3].color[1] = 1.0f;
+	vertex[3].color[2] = 0.5f;
+
+	vertex[4].color[0] = 1.0f;
+	vertex[4].color[1] = 0.0f;
+	vertex[4].color[2] = 1.0f;
+
+	vertex[5].color[0] = 1.0f;
+	vertex[5].color[1] = 0.0f;
+	vertex[5].color[2] = 1.0f;
+
+	vertex[6].color[0] = 0.0f;
+	vertex[6].color[1] = 1.0f;
+	vertex[6].color[2] = 0.0f;
+
+	vertex[7].color[0] = 0.0f;
+	vertex[7].color[1] = 1.0f;
+	vertex[7].color[2] = 0.0f;
 
 	/*Index of Poly / Triangle to Draw */
 	triangles[0] = 0;   triangles[1] = 1;   triangles[2] = 2;
@@ -175,7 +174,7 @@ void Game::initialize()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	/* Upload vertex data to GPU */
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 36, vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 8, vertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &index);
@@ -449,7 +448,7 @@ void Game::render()
 
 	/*	As the data positions will be updated by the this program on the
 		CPU bind the updated data to the GPU for drawing	*/
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 36, vertex, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 8, vertex, GL_STATIC_DRAW);
 
 	/*	Draw Triangle from VBO	(set where to start from as VBO can contain
 		model components that 'are' and 'are not' to be drawn )	*/
